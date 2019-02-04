@@ -11,5 +11,10 @@ public class TripCount {
 		this.medallion = medallion;
 		this.count = count;
 	}
+
+	@Override
+	public String toString() {
+		return "TripCount [medallion=" + medallion + ", count=" + count + "]";
+	}
 	
 }

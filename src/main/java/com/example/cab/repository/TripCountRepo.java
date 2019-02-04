@@ -18,5 +18,5 @@ public interface TripCountRepo extends JpaRepository<Trip, Long> {
 //	List<TripCount> getByMedallionAndDate(String medallion, String date);
 
 	@Query(value = "SELECT new com.example.cab.model.TripCount(t.medallion, COUNT(t)) FROM Trip t WHERE t.medallion=:medallion AND DATE_FORMAT(t.pickup_datetime, '%Y-%m-%d') LIKE :date%")
-	List<TripCount> getByMedallionAndDate(String medallion, String date);
+	TripCount getByMedallionAndDate(String medallion, String date);
 }
