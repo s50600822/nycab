@@ -1,3 +1,11 @@
+# Notes
+  The app supposed to provide API to query cabs trip count on any given date via /trip. However /trip is not complete as I am looking to:
+  - translate the SQL(mentioned in the last section) into org.springframework.data.jpa.repository.Query. Or swith to using other queryDSL that is more flexible. JPA query seems to have quite a few limit include function inside aggregate functions(for example COUNT(DATE_FORMAT(pickup_datetime, '%Y-%m-%d') ends up invalid ) ).
+  - add params for the request.
+  - add caching as well as param for cache eviction.
+  - tests.
+  - put it into a container for deployment.
+
 # BUILD + test the app:
     mvn clean install -DskipTestss
 This will produce ./target/simplecab-0.0.1-SNAPSHOT.jar, to run the test make sure database is ready in the background(see below Docker Container for cab database).
