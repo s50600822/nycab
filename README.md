@@ -1,3 +1,16 @@
+# BUILD + test the app:
+    mvn clean install -DskipTestss
+This will produce ./target/simplecab-0.0.1-SNAPSHOT.jar, to run the test make sure database is ready in the background(see below Docker Container for cab database).
+
+# RUN the app:
+Note that "Docker Container for cab database" needs to be running for the app to start.
+## from built artifact:
+    java -jar  ./target/simplecab-0.0.1-SNAPSHOT.jar
+## from source:
+    mvn spring-boot:run
+## from deployed container
+    (comming soon)
+
 # Docker Container for cab database:
 Before starting the app, we need to start the MySQL container with populated data. This will be provided by the following [image](https://cloud.docker.com/u/s50600822/repository/docker/s50600822/mysql_simplecab). See definition in [Dockerfile](https://github.com/s50600822/nycab/blob/master/scripts/Dockerfile):
 
