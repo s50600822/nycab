@@ -5,6 +5,7 @@
   - add caching as well as param for cache eviction.
   - tests.
   - put it into a container for deployment.
+  - performance, indexing?
 
 # BUILD + test the app:
     mvn clean install -DskipTestss
