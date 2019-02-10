@@ -16,30 +16,32 @@ import com.example.cab.repository.TripCountRepo;
 import com.example.cab.repository.TripCountRepo.CabTripCountPerDate;
 
 @RestController
-@RequestMapping(path="/trip")
+@RequestMapping(path = "/trip")
 public class TripsController {
 	TripCountRepo repo;
-	
+
 	public TripsController(TripCountRepo repo) {
 		super();
 		this.repo = repo;
 	}
 
 	@GetMapping(produces = "application/json")
-	public ResponseEntity<Map<String, Map<String, Long>>> getByMedallionAndDate (
+	public ResponseEntity<Map<String, Map<String, Long>>> getByMedallionAndDate(
 			@RequestParam("cabIds") Set<String> cabIds,
-			@RequestParam(value = "i", required = false, defaultValue = "false") boolean purgeCache){
-		
-		return new ResponseEntity<Map<String, Map<String, Long>>>(build(repo.getByMedallions(cabIds)), HttpStatus.OK);
+			@RequestParam(required = false, defaultValue = "false") boolean purgeCache) {
+		if (purgeCache) {
+			repo.clearCache();
+		}
+		return new ResponseEntity<Map<String, Map<String, Long>>>(getStat(repo.getByMedallions(cabIds)), HttpStatus.OK);
 	}
-	
-	private Map<String, Map<String, Long>> build(final List<CabTripCountPerDate> stats){
+
+	private Map<String, Map<String, Long>> getStat(final List<CabTripCountPerDate> stats) {
 		final Map<String, Map<String, Long>> result = new HashMap<String, Map<String, Long>>();
-		for(CabTripCountPerDate cab: stats) {
+		for (CabTripCountPerDate cab : stats) {
 			final String id = cab.getMedallion();
-			if(result.containsKey(id)) {
-				result.get(id).put(cab.getPickupDate(),cab.getCount());
-			}else {
+			if (result.containsKey(id)) {
+				result.get(id).put(cab.getPickupDate(), cab.getCount());
+			} else {
 				final Map<String, Long> countByDate = new HashMap<String, Long>();
 				countByDate.put(cab.getPickupDate(), cab.getCount());
 				result.put(id, countByDate);
@@ -47,5 +49,4 @@ public class TripsController {
 		}
 		return result;
 	}
-	
 }

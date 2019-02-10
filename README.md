@@ -1,3 +1,16 @@
+# Simple Cab
+This sample webapp demo a single GET endpoint, which list the amount of trips each cab made on any particular day:
+
+    /trip?cabIds=<CAB_IDS>
+    /trip?cabIds=<CAB_IDS>&purgeCache=true
+
+For example:
+
+    curl http://localhost:8080/trip\?cabIds\=BBD41D16BDEE492B03A57F646424DD67,5AB4DE718E958FC082557F03BF439493
+    {"5AB4DE718E958FC082557F03BF439493":{"2013-12-30":5,"2013-12-31":14,"2013-12-01":1,"2013-12-03":1},"BBD41D16BDEE49.    2B03A57F646424DD67":{"2013-12-30":41,"2013-12-31":35,"2013-12-03":4,"2013-12-06":6}}    
+- CAB_IDS can be one or a comma separated list of IDs
+- purgeCache when specified will evict all cache before getting the data. Cache configs can be tuned in ./src/main/resources/application.properties.
+
 # Notes
   The app supposed to provide API to query cabs trip count on any given date via /trip. However /trip is not complete as I am looking to:
   - translate the SQL(mentioned in the last section) into org.springframework.data.jpa.repository.Query. Or swith to using other queryDSL that is more flexible. JPA query seems to have quite a few limit include function inside aggregate functions(for example COUNT(DATE_FORMAT(pickup_datetime, '%Y-%m-%d') ends up invalid ) ). Should probably just use jdbc template...
@@ -59,3 +72,4 @@ should already have ny_cab_data database created with cab_trip_data table popula
 
 ### GIVEN medallions/cabs
     select medallion, DATE_FORMAT(pickup_datetime, '%Y-%m-%d'), count(DATE_FORMAT(pickup_    datetime, '%Y-%m-%d')) from cab_trip_data  where medallion in     ('A0B5AF0F9B31690CEBB51ECD27D2BE71', '5AB4DE718E958FC082557F03BF439493') group by     medallion, DATE_FORMAT(pickup_datetime, '%Y-%m-%d');
+- The way we query data, this table might not be perfect, MySQL doesn't seem to support composite index of medallion and DATE_FORMAT(pickup_datetime, '%Y-%m-%d'). It might be better to add a GENERATED date col with only date and declare index on the two for optimization.

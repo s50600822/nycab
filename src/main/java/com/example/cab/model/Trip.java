@@ -32,7 +32,7 @@ import javax.persistence.TemporalType;
 @Entity
 @Table(name="cab_trip_data")
 public class Trip {
-	@Id //Not an ID, not unique, just a dummy so JPA doesn't complain
+	@Id //Not an ID, not unique, just a dummy so JPA doesn't complainfTripID
     @Column(name = "medallion")
 	private String medallion;
 	
