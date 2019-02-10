@@ -1,20 +1,20 @@
 package com.example.cab;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-//import org.springframework.stereotype.Controller;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.cab.repository.TripCountRepo;
-import com.example.cab.repository.TripCountRepo.Cab;
+import com.example.cab.repository.TripCountRepo.CabTripCountPerDate;
 
-//@Controller
 @RestController
 @RequestMapping(path="/trip")
 public class TripsController {
@@ -25,13 +25,27 @@ public class TripsController {
 		this.repo = repo;
 	}
 
-	@GetMapping
-	public String getByMedallionAndDate (){
-//	    return repo.getByMedallionAndDate("BBD41D16BDEE492B03A57F646424DD67", "2013-12-30").toString();
+	@GetMapping(produces = "application/json")
+	public ResponseEntity<Map<String, Map<String, Long>>> getByMedallionAndDate (
+			@RequestParam("cabIds") Set<String> cabIds,
+			@RequestParam(value = "i", required = false, defaultValue = "false") boolean purgeCache){
 		
-		List<Cab> res = repo.getByMedallions2(Collections.emptyList());
-		StringBuilder sb = new StringBuilder();
-		res.stream().forEach(c -> sb.append(c.getMedallion()).append(c.getPickupDate()).append(c.getCount()).append("\n"));
-		return sb.toString();
+		return new ResponseEntity<Map<String, Map<String, Long>>>(build(repo.getByMedallions(cabIds)), HttpStatus.OK);
 	}
+	
+	private Map<String, Map<String, Long>> build(final List<CabTripCountPerDate> stats){
+		final Map<String, Map<String, Long>> result = new HashMap<String, Map<String, Long>>();
+		for(CabTripCountPerDate cab: stats) {
+			final String id = cab.getMedallion();
+			if(result.containsKey(id)) {
+				result.get(id).put(cab.getPickupDate(),cab.getCount());
+			}else {
+				final Map<String, Long> countByDate = new HashMap<String, Long>();
+				countByDate.put(cab.getPickupDate(), cab.getCount());
+				result.put(id, countByDate);
+			}
+		}
+		return result;
+	}
+	
 }
